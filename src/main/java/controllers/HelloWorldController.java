@@ -26,4 +26,7 @@ public class HelloWorldController {
     public String netID() {
         return "sl2933";
     }
+
+    @GET
+    public String root() { return "sl2933"; }
 }
