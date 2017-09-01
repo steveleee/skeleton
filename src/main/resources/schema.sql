@@ -14,5 +14,5 @@ CREATE TABLE tags (
   name VARCHAR(255),
 
   FOREIGN KEY (receipt_id) REFERENCES receipts (id),
-  PRIMARY KEY (id, receipt_id)
+  PRIMARY KEY (id)
 );
