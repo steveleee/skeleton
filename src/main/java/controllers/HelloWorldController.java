@@ -20,4 +20,10 @@ public class HelloWorldController {
     public String helloWorld(@Session HttpSession session) {
         return "Hello World " + session.toString();
     }
+
+    @GET
+    @Path("/netid")
+    public String netID() {
+        return "sl2933";
+    }
 }
