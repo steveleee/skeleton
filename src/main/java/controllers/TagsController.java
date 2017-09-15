@@ -27,14 +27,10 @@ public class TagsController {
 
     @PUT
     @Path("/{tag}")
-    public void toggleTag(@PathParam("tag") String tagName, @NotNull String receiptID) {
-        receiptID = receiptID.replaceAll("^\"|\"$", "");
-        int delete = tags.delete(tagName, Integer.parseInt(receiptID));
+    public void toggleTag(@PathParam("tag") String tagName, @NotNull int receiptID) {
+        int delete = tags.delete(tagName, receiptID);
         if (delete == 0) {
-            tags.insert(tagName, Integer.parseInt(receiptID));
-        }
-        else {
-            System.out.println("deleted");
+            tags.insert(tagName, receiptID);
         }
     }
 
