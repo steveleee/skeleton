@@ -1,12 +1,12 @@
 package dao;
 
+import generated.tables.records.ReceiptsRecord;
 import generated.tables.records.TagsRecord;
 import org.jooq.Configuration;
 import org.jooq.DSLContext;
-import org.jooq.Name;
+import org.jooq.Result;
 import org.jooq.impl.DSL;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 import static com.google.common.base.Preconditions.checkState;
@@ -40,5 +40,9 @@ public class TagDao {
 
     public List<Integer> getAllReceiptIDsForTagName(String tagName) {
         return dsl.selectFrom(TAGS).where(TAGS.NAME.eq(tagName)).fetch(TAGS.RECEIPT_ID, Integer.class);
+    }
+
+    public List<String> tagsForReceiptID(int receiptID) {
+        return dsl.selectFrom(TAGS).where(TAGS.RECEIPT_ID.eq(receiptID)).fetch().map(TagsRecord::getName);
     }
 }
