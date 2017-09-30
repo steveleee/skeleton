@@ -9,15 +9,17 @@
         }
         H1 {float: left;}
 
-        #add-receipt{
+        #add-receipt, #start-camera {
             background-color:orange;
             border: 1px solid black;
-            width: 100px;
+            padding: 10px;
+            margin: 10px;
             float: right;
             font-size: 2em;
             color: white;
             text-align: center;
             border-radius: 5px;
+            font-size: 20px;
         }
 
         #receiptList {
@@ -116,15 +118,24 @@
             border: 1px solid black;
         }
 
-        #save-receipt {
+        #add-photo-window {
+            background-color: orange;
+            width: 200px;
+            height: 200px;
+            position: absolute;
+            top: 50px;
+            right: 10px;
+        }
+
+        #save-receipt, #take-pic {
             background-color: lightgreen;
         }
 
-        #cancel-receipt {
+        #cancel-receipt, #take-pic-cancel {
             background-color: lightcoral;
         }
 
-        #save-receipt, #cancel-receipt {
+        #save-receipt, #cancel-receipt, #take-pic, #take-pic-cancel {
             margin: auto;
             width: 40%;
             text-align: center;
@@ -139,13 +150,13 @@
         }
 
         video {
-            width: 550px;
-            height: 450px;
+            width: 150px;
+            height: 150px;
             border: 1px solid black;
         }
 
         #vidwrap {
-            margin: 20px 0;
+            margin: auto;
         }
 
         #start, #snapshot {
@@ -195,14 +206,21 @@
 
             /// Add receipt window handler
             $("#add-receipt").click(function() {
-                if ($('#add-receipt-window').length == 0) {
-                    $(`<div id="add-receipt-window">
-                        <form>
-                        <input id="merchant" placeholder="merchant"><br>
-                        <input id="amount" placeholder="amount"><br>
-                        </form>
-                        <div id="save-receipt">Save</div>
-                        <div id="cancel-receipt">Cancel</div>
+                showReceiptWindow();
+            });
+
+            /// Add camera window handler
+            $("#start-camera").click(function() {
+                if ($('#add-photo-window').length == 0) {
+                    startVideo();
+
+                    $(`<div id="add-photo-window">
+                        <div id="vidwrap">
+                            <video autoplay width="100" height="100"></video>
+                        </div>
+                        </br>
+                        <div id="take-pic">Snap</div>
+                        <div id="take-pic-cancel">Cancel</div>
                     </div>`).appendTo($("#container"));
                 }
             });
@@ -226,9 +244,19 @@
                 });
             });
 
+            /// Save receipt handler
+            $(document).on('click', '#take-pic', function() {
+                takeSnapshot();
+            });
+
             /// Cancel receipt add handler
             $(document).on('click', '#cancel-receipt', function() {
                 $('#add-receipt-window').remove();
+            });
+
+            /// Cancel receipt add handler
+            $(document).on('click', '#take-pic-cancel', function() {
+                $('#add-photo-window').remove();
             });
 
             $(document).on('click', '.add-tag', function() {
@@ -299,18 +327,30 @@
                     data: base64EncodedImageData,
                     contentType: "text/plain",
                     success: function() {},
-               })
+                })
                 .then(response => {
-                    $('video').after(`<div>got response: <pre>${JSON.stringify(response)}</pre></div>`);
+                    $('#add-photo-window').remove();
+                    showReceiptWindow();
+
+                    $('#merchant').val(response.merchantName);
+                    $('#amount').val(parseFloat(Math.round(response.amount * 100) / 100).toFixed(2));
                 })
                 .always(() => console.log('request complete'));
-
-                // For debugging, you can uncomment this to see the frame that was captured
-                // $('BODY').append(canvas);
             });
-
         }
 
+        function showReceiptWindow() {
+            if ($('#add-receipt-window').length == 0) {
+                $(`<div id="add-receipt-window">
+                        <form>
+                        <input id="merchant" placeholder="merchant"><br>
+                        <input id="amount" placeholder="amount"><br>
+                        </form>
+                        <div id="save-receipt">Save</div>
+                        <div id="cancel-receipt">Cancel</div>
+                    </div>`).appendTo($("#container"));
+            }
+        }
 
         $(function () {
             $('#start').on('click', startVideo);
@@ -325,6 +365,7 @@
     <div id="header-container">
         <h1>My receipts</h1>
         <div id="add-receipt">+</div>
+        <div id="start-camera">Camera</div>
     </div>
     <div class="divTable">
         <div class="divTableHeading">
@@ -337,12 +378,7 @@
         </div>
         <div id="receiptList">
         </div>
-    <button id="start">Start Video</button>
-    <button id="snapshot" disabled="true">Take a Snapshot!</button>
     <br>
-    <div id="vidwrap">
-        <video autoplay></video>
-    </div>
 </body>
 
 </html>
